@@ -3,11 +3,9 @@ env.py
 .ipynb_checkpoints/
 __pycache__
 .vscode/
-.csv
+*.csv
 EvaluatingModelPerformance.pdf
 Modeling.pdf
 Python_Seaborn_Cheat_Sheet.pdf
 classification .pdf
-iris_df.csv
-titanic_df.csv
 untidy_data/
