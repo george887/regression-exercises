@@ -105,21 +105,21 @@ def prep_titanic(cached = True):
     return train, validate, test
 
 ############### Telco data ###############################
-    def prepare_telco(df):
+def prepare_telco(df):
     # Switching gender column to read male. Keeping track of male and female
     df.rename(columns={'gender': 'male'}, inplace=True)
     
     # Making males have a value of 1 and females 0
     df['male'] = df['male'].replace("Male", 1)
     df['male'] = df['male'].replace("Female", 0) 
-   
+
     # Switching partner column to read partners. 
     df.rename(columns={'partner': 'partners'}, inplace=True)
-   
+
     # Partners have a value yes/no 1/0.
     df['partners'] = df['partners'].replace("Yes", 1)
     df['partners'] = df['partners'].replace("No", 0)  
-   
+
     # Dependents column to read yes/no 1/0.
     df['dependents'] = df['dependents'].replace("Yes", 1)
     df['dependents'] = df['dependents'].replace("No", 0)
@@ -130,11 +130,11 @@ def prep_titanic(cached = True):
     
     # multiple_lines adding no phone service as no for multiple lines
     df["multiple_lines"] = df["multiple_lines"].replace("No phone service", "No")
-   
+
     # Now making into yes/no 1/0
     df.multiple_lines = df.multiple_lines.replace("Yes", 1)
     df.multiple_lines = df.multiple_lines.replace("No", 0)
-   
+
     # online_security into yes/no 1/0
     df["online_security"] = df["online_security"].replace("No internet service", "No")
     df.online_security = df.online_security.replace("Yes", 1)
@@ -180,11 +180,13 @@ def prep_titanic(cached = True):
     #df = df.rename(columns={'contract_type_id':'contract_type'})
     #df = df.loc[:,~df.columns.duplicated()]
     service_dum = pd.get_dummies(df.contract_type)
-    df = pd.concat([df, service_dum], axis = 1)
-    df.rename(columns = {'Month-to-month': 'month_to_month', 'One year': 'one_year', 'Two year': 'two_year'})
+    payment_dum = pd.get_dummies(df.payment_type)
+    df = pd.concat([df, service_dum, payment_dum], axis = 1)
+    df = df.rename(columns = {'Month-to-month': 'month_to_month', 'One year': 'one_year', 'Two year': 'two_year', 'Electronic check': 'electronic_check', 'Mailed check': 'mailed_check', 'Bank transfer (automatic)': 'bank_transfer_auto', 'Credit card (automatic)': 'credit_card_auto'})
+    df = df.drop('payment_type', axis = 1)
     df = df.rename(columns={'contract_type_id':'contract_type'})
     #df['contract_type'] = df.contract_type.astype(float)
-   
+
     # Dropping internet_service_type and renaming internet_service_type_id to internet_service_type. 
     # 1 = DSL, 2 = Fiber Optic yr, 3 = None
     df = df.drop("internet_service_type", axis=1)
@@ -200,11 +202,12 @@ def prep_titanic(cached = True):
     # Removing duplicated columns
     df = df.loc[:,~df.columns.duplicated()]
     
-     # splitting the data into train, test and validate
+    # splitting the data into train, test and validate
     train_validate, test = train_test_split(df, test_size = .20, random_state = 123)
     train, validate = train_test_split(train_validate, test_size = .30, random_state = 123)
     return train, validate, test
 
+############## prepare telco all###################
 def prepare_telco_all(df):
     # Switching gender column to read male. Keeping track of male and female
     df.rename(columns={'gender': 'male'}, inplace=True)
@@ -280,8 +283,10 @@ def prepare_telco_all(df):
     #df = df.rename(columns={'contract_type_id':'contract_type'})
     #df = df.loc[:,~df.columns.duplicated()]
     service_dum = pd.get_dummies(df.contract_type)
-    df = pd.concat([df, service_dum], axis = 1)
-    df.rename(columns = {'Month-to-month': 'month_to_month', 'One year': 'one_year', 'Two year': 'two_year'})
+    payment_dum = pd.get_dummies(df.payment_type)
+    df = pd.concat([df, service_dum, payment_dum], axis = 1)
+    df = df.rename(columns = {'Month-to-month': 'month_to_month', 'One year': 'one_year', 'Two year': 'two_year', 'Electronic check': 'electronic_check', 'Mailed check': 'mailed_check', 'Bank transfer (automatic)': 'bank_transfer_auto', 'Credit card (automatic)': 'credit_card_auto'})
+    df = df.drop('payment_type', axis = 1)
     df = df.rename(columns={'contract_type_id':'contract_type'})
     #df['contract_type'] = df.contract_type.astype(float)
 
@@ -303,4 +308,8 @@ def prepare_telco_all(df):
     # splitting the data into train, test and validate
     #train_validate, test = train_test_split(df, test_size = .20, random_state = 123)
     #train, validate = train_test_split(train_validate, test_size = .30, random_state = 123)
+    return df
+
+def wrangle_telco(df):
+    df = df[['customer_id', 'monthly_charges', 'tenure', 'total_charges', 'two_year']]
     return df
