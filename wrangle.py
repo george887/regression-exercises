@@ -5,7 +5,7 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 import sklearn.preprocessing
 
-def wrangle_telco(df):
+def wrangle_telco_data(df):
     df = df[df['two_year'] == 1]
     df = df[['customer_id', 'monthly_charges', 'tenure', 'total_charges']]
     return df
@@ -38,3 +38,10 @@ def scale_telco_data(train, test, validate):
         columns_to_scale=['total_charges', 'monthly_charges', 'tenure'],
     )
     return train, validate, test
+
+def wrangle_grades():
+    grades = pd.read_csv("student_grades.csv")
+    grades.drop(columns="student_id", inplace=True)
+    grades.replace(r"^\s*$", np.nan, regex=True, inplace=True)
+    df = grades.dropna().astype("int")
+    return df
